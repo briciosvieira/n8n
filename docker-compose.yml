@@ -10,7 +10,7 @@ services:
       - .env
     environment:
       # Configuração do N8N
-      - N8N_HOST=n8n.briciosvieira.cloud
+      - N8N_HOST=
       - N8N_PORT=5678
       - N8N_PROTOCOL=https
       - WEBHOOK_URL=
