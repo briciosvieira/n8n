@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    restart: always
+    ports:
+      - "5678:5678"
+    env_file:
+      - .env
+    environment:
+      # Configuração do N8N
+      - N8N_HOST=n8n.briciosvieira.cloud
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=
+      - N8N_EDITOR_BASE_URL=
+
+      # Autenticação
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=
+      - N8N_BASIC_AUTH_PASSWORD=
+
+      # Banco PostgreSQL (usando variáveis do .env)
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+
+      # CORS
+      - N8N_CORS_ENABLED=true
+      - N8N_CORS_ORIGIN=*
+
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+    networks:
+      - containers_shared
+
+  postgres:
+    image: postgres:16
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    networks:
+      - containers_shared
+
+networks:
+  containers_shared:
+    external: true
